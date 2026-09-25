@@ -1,0 +1,1024 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Skylark MSP Knowledge Hub - secure internal support documentation portal." />
+  <title>Skylark MSP Knowledge Hub</title>
+  <style>
+    :root {
+      --skylark-blue: #00A3DA;
+      --skylark-blue-dark: #007FAE;
+      --navy: #102A43;
+      --text: #334E68;
+      --muted: #627D98;
+      --surface: #FFFFFF;
+      --surface-soft: #F5FAFD;
+      --border: #D9E7EF;
+      --danger: #B42318;
+      --shadow: 0 14px 40px rgba(16, 42, 67, 0.10);
+      --radius: 18px;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--text);
+      background: var(--surface);
+      line-height: 1.6;
+    }
+    body.modal-open { overflow: hidden; }
+    button, input { font: inherit; }
+    button { cursor: pointer; }
+    a { color: inherit; text-decoration: none; }
+    .hidden { display: none !important; }
+
+    .container {
+      width: min(1160px, calc(100% - 40px));
+      margin: 0 auto;
+    }
+
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 30;
+      background: rgba(255,255,255,0.96);
+      border-bottom: 1px solid var(--border);
+      backdrop-filter: blur(12px);
+    }
+
+    .nav {
+      min-height: 76px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      min-width: 0;
+    }
+    .brand img { width: 146px; height: auto; display: block; }
+    .brand-divider { width: 1px; height: 34px; background: var(--border); }
+    .brand-title {
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: var(--navy);
+      white-space: nowrap;
+    }
+
+    .nav-actions { display: flex; align-items: center; gap: 12px; }
+    .user-pill {
+      display: none;
+      align-items: center;
+      gap: 10px;
+      padding: 7px 10px 7px 7px;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      background: #fff;
+      color: var(--navy);
+      font-size: 13px;
+      font-weight: 700;
+    }
+    .user-pill img {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+    .outline-btn, .primary-btn, .danger-btn {
+      border: 0;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      border-radius: 9px;
+      padding: 11px 16px;
+      font-weight: 800;
+      font-size: 14px;
+      transition: .18s ease;
+    }
+    .outline-btn {
+      background: #fff;
+      border: 1px solid var(--navy);
+      color: var(--navy);
+    }
+    .outline-btn:hover { background: var(--navy); color: #fff; }
+    .primary-btn {
+      background: var(--skylark-blue);
+      color: #fff;
+      box-shadow: 0 10px 24px rgba(0,163,218,.24);
+    }
+    .primary-btn:hover { background: var(--skylark-blue-dark); transform: translateY(-1px); }
+    .danger-btn { background: #fff; border: 1px solid #F1B8B5; color: var(--danger); }
+    .danger-btn:hover { background: #FFF6F5; }
+
+    .hero {
+      position: relative;
+      overflow: hidden;
+      padding: 86px 0 72px;
+      background:
+        radial-gradient(circle at 90% 20%, rgba(0,163,218,.16), transparent 28%),
+        linear-gradient(180deg, #ffffff 0%, #f5fbfe 100%);
+    }
+    .hero::after {
+      content: "";
+      position: absolute;
+      width: 380px;
+      height: 380px;
+      border: 1px solid rgba(0,163,218,.12);
+      border-radius: 50%;
+      right: -160px;
+      bottom: -180px;
+    }
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1.12fr .88fr;
+      gap: 56px;
+      align-items: center;
+    }
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--skylark-blue-dark);
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      margin-bottom: 16px;
+    }
+    .eyebrow::before {
+      content: "";
+      width: 28px;
+      height: 2px;
+      background: var(--skylark-blue);
+      border-radius: 999px;
+    }
+    h1 {
+      margin: 0;
+      color: var(--navy);
+      font-size: clamp(42px, 6vw, 68px);
+      line-height: 1.05;
+      letter-spacing: -.045em;
+      max-width: 760px;
+    }
+    .hero h1 span { color: var(--skylark-blue); }
+    .hero-copy {
+      margin: 20px 0 26px;
+      font-size: 18px;
+      max-width: 690px;
+      color: var(--muted);
+    }
+    .hero-status {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--muted);
+      font-size: 13px;
+      min-height: 24px;
+    }
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #20B26B;
+      box-shadow: 0 0 0 4px rgba(32,178,107,.12);
+    }
+    .hero-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 26px; }
+
+    .hero-panel {
+      position: relative;
+      z-index: 1;
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 22px;
+      padding: 26px;
+      box-shadow: var(--shadow);
+    }
+    .panel-kicker { color: var(--muted); font-size: 12px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; }
+    .panel-title { margin: 8px 0 20px; color: var(--navy); font-size: 24px; font-weight: 800; }
+    .quick-list { display: grid; gap: 12px; }
+    .quick-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 14px 15px;
+      background: var(--surface-soft);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      transition: .2s ease;
+      cursor: pointer;
+    }
+    .quick-item:hover { transform: translateX(4px); border-color: rgba(0,163,218,.55); }
+    .quick-left { display: flex; align-items: center; gap: 12px; }
+    .icon, .card-icon {
+      display: grid;
+      place-items: center;
+      flex: 0 0 auto;
+      background: rgba(0,163,218,.12);
+      color: var(--skylark-blue-dark);
+      font-weight: 900;
+    }
+    .icon { width: 38px; height: 38px; border-radius: 10px; font-size: 12px; }
+    .quick-name { color: var(--navy); font-weight: 800; font-size: 14px; }
+    .quick-sub { font-size: 12px; color: var(--muted); }
+    .arrow { color: var(--skylark-blue); font-size: 18px; font-weight: 900; }
+
+    section { padding: 78px 0; }
+    .section-head { max-width: 760px; margin-bottom: 30px; }
+    .section-tag {
+      display: inline-block;
+      margin-bottom: 8px;
+      color: var(--skylark-blue-dark);
+      font-size: 12px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: .12em;
+    }
+    h2 {
+      margin: 0;
+      color: var(--navy);
+      font-size: clamp(30px, 4vw, 44px);
+      line-height: 1.15;
+      letter-spacing: -.03em;
+    }
+    .section-head p { margin: 12px 0 0; color: var(--muted); }
+
+    .cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; }
+    .card {
+      display: flex;
+      flex-direction: column;
+      min-height: 280px;
+      padding: 28px;
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: 0 6px 22px rgba(16,42,67,.045);
+      transition: transform .22s ease, box-shadow .22s ease, border-color .22s ease;
+      cursor: pointer;
+    }
+    .card:hover {
+      transform: translateY(-6px);
+      border-color: rgba(0,163,218,.45);
+      box-shadow: var(--shadow);
+    }
+    .card.disabled {
+      cursor: default;
+      opacity: .55;
+    }
+    .card.disabled:hover { transform: none; box-shadow: 0 6px 22px rgba(16,42,67,.045); border-color: var(--border); }
+    .card-icon { width: 48px; height: 48px; margin-bottom: 22px; border-radius: 12px; background: var(--skylark-blue); color: #fff; }
+    .card h3 { margin: 0 0 10px; color: var(--navy); font-size: 23px; }
+    .card p { margin: 0; color: var(--muted); font-size: 14px; }
+    .card-link { margin-top: auto; padding-top: 22px; color: var(--skylark-blue-dark); font-size: 14px; font-weight: 800; }
+    .card-meta { margin-top: 10px; color: var(--muted); font-size: 12px; }
+
+    .loader-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; }
+    .skeleton {
+      height: 280px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: linear-gradient(90deg, #f6fafc 25%, #eef5f8 37%, #f6fafc 63%);
+      background-size: 400% 100%;
+      animation: shimmer 1.3s infinite;
+    }
+    @keyframes shimmer { 0% { background-position: 100% 0; } 100% { background-position: -100% 0; } }
+
+    .portal { background: #F8FBFD; border-top: 1px solid var(--border); }
+    .portal-toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 22px;
+      flex-wrap: wrap;
+    }
+    .crumbs { display: flex; align-items: center; gap: 9px; color: var(--muted); font-size: 13px; }
+    .crumbs button { border: 0; background: transparent; color: var(--skylark-blue-dark); font-weight: 800; padding: 0; }
+    .search-wrap { position: relative; min-width: min(360px, 100%); flex: 1; max-width: 430px; }
+    .search-wrap input {
+      width: 100%;
+      padding: 12px 14px 12px 40px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: #fff;
+      color: var(--navy);
+      outline: none;
+    }
+    .search-wrap input:focus { border-color: var(--skylark-blue); box-shadow: 0 0 0 3px rgba(0,163,218,.11); }
+    .search-icon { position: absolute; left: 13px; top: 50%; transform: translateY(-50%); color: var(--muted); }
+
+    .docs-layout { display: grid; grid-template-columns: 300px 1fr; gap: 24px; align-items: start; }
+    .folder-panel, .docs-panel { background: #fff; border: 1px solid var(--border); border-radius: 16px; box-shadow: 0 6px 22px rgba(16,42,67,.04); }
+    .folder-panel { padding: 16px; }
+    .folder-title { color: var(--navy); font-size: 13px; font-weight: 900; letter-spacing: .08em; text-transform: uppercase; margin-bottom: 10px; }
+    .folder-btn {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 10px 11px;
+      border: 0;
+      background: transparent;
+      color: var(--text);
+      border-radius: 9px;
+      text-align: left;
+      font-weight: 700;
+    }
+    .folder-btn:hover, .folder-btn.active { background: rgba(0,163,218,.08); color: var(--navy); }
+    .folder-count { color: var(--muted); font-size: 12px; }
+
+    .docs-panel { overflow: hidden; }
+    .docs-panel-head { padding: 20px 22px; border-bottom: 1px solid var(--border); }
+    .docs-title { margin: 0; color: var(--navy); font-size: 23px; }
+    .docs-subtitle { margin: 5px 0 0; color: var(--muted); font-size: 13px; }
+    .doc-list { display: grid; }
+    .doc-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      padding: 15px 22px;
+      border-bottom: 1px solid #edf3f6;
+      cursor: pointer;
+      transition: background .16s ease;
+    }
+    .doc-item:last-child { border-bottom: 0; }
+    .doc-item:hover { background: #F8FCFE; }
+    .doc-left { display: flex; align-items: center; gap: 12px; min-width: 0; }
+    .doc-icon { width: 38px; height: 38px; border-radius: 9px; display: grid; place-items: center; background: #EFF8FC; color: var(--skylark-blue-dark); font-size: 12px; font-weight: 900; flex: 0 0 auto; }
+    .doc-name { color: var(--navy); font-weight: 800; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .doc-path { color: var(--muted); font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .doc-arrow { color: var(--skylark-blue); font-weight: 900; }
+
+    .empty, .loading-box, .error-box {
+      margin: 0;
+      padding: 34px 22px;
+      color: var(--muted);
+      text-align: center;
+    }
+    .error-box { color: var(--danger); }
+    .notice {
+      padding: 14px 16px;
+      border: 1px solid var(--border);
+      background: #fff;
+      border-radius: 12px;
+      color: var(--muted);
+      margin-bottom: 18px;
+      font-size: 13px;
+    }
+
+    .info-band { background: var(--navy); color: #fff; padding: 64px 0; }
+    .info-band-grid { display: grid; grid-template-columns: 1.3fr .7fr; gap: 40px; align-items: center; }
+    .info-band h2 { color: #fff; }
+    .info-band p { color: #BFD4E5; margin: 14px 0 0; }
+    .info-stat { text-align: center; padding: 24px; border: 1px solid rgba(255,255,255,.16); border-radius: 16px; background: rgba(255,255,255,.05); }
+    .stat-number { display: block; color: var(--skylark-blue); font-size: 44px; font-weight: 900; line-height: 1; }
+    .stat-label { display: block; margin-top: 8px; color: #D9E7EF; font-size: 13px; font-weight: 700; }
+
+    footer { padding: 34px 0; border-top: 1px solid var(--border); background: #fff; }
+    .footer-row { display: flex; align-items: center; justify-content: space-between; gap: 22px; }
+    .footer-brand { color: var(--navy); font-weight: 800; }
+    .footer-note { color: var(--muted); font-size: 13px; }
+    .footer-links { display: flex; gap: 18px; color: var(--muted); font-size: 13px; font-weight: 700; }
+    .footer-links a:hover { color: var(--skylark-blue); }
+
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 100;
+      display: none;
+      padding: 24px;
+      background: rgba(3, 20, 34, .72);
+      align-items: center;
+      justify-content: center;
+    }
+    .modal-backdrop.open { display: flex; }
+    .modal {
+      width: min(1280px, 100%);
+      height: min(90vh, 900px);
+      display: flex;
+      flex-direction: column;
+      background: #fff;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 30px 80px rgba(0,0,0,.28);
+    }
+    .modal-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      padding: 14px 18px;
+      border-bottom: 1px solid var(--border);
+      background: #fff;
+    }
+    .modal-title-wrap { min-width: 0; }
+    .modal-title { margin: 0; color: var(--navy); font-size: 15px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .modal-path { color: var(--muted); font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .modal-actions { display: flex; gap: 8px; flex: 0 0 auto; }
+    .modal-actions button { border: 1px solid var(--border); background: #fff; color: var(--navy); border-radius: 8px; padding: 8px 11px; font-weight: 800; }
+    .modal-actions button:hover { background: #F5FAFD; }
+    .modal-body { flex: 1; min-height: 0; background: #EAF1F5; position: relative; }
+    .modal-body iframe { width: 100%; height: 100%; border: 0; background: #fff; }
+    .modal-body img { display: block; max-width: 100%; max-height: 100%; margin: auto; object-fit: contain; }
+    .modal-body pre { margin: 0; padding: 24px; height: 100%; overflow: auto; background: #fff; white-space: pre-wrap; word-break: break-word; color: var(--text); }
+    .modal-loading { height: 100%; display: grid; place-items: center; color: var(--muted); background: #fff; }
+
+    .toast {
+      position: fixed;
+      right: 22px;
+      bottom: 22px;
+      z-index: 120;
+      max-width: 380px;
+      padding: 14px 16px;
+      border-radius: 12px;
+      color: #fff;
+      background: var(--navy);
+      box-shadow: 0 16px 36px rgba(16,42,67,.22);
+      display: none;
+    }
+    .toast.show { display: block; }
+
+    @media (max-width: 980px) {
+      .hero-grid, .info-band-grid { grid-template-columns: 1fr; }
+      .cards, .loader-grid { grid-template-columns: 1fr 1fr; }
+      .docs-layout { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 700px) {
+      .container { width: min(100% - 24px, 1160px); }
+      .brand img { width: 125px; }
+      .brand-divider, .brand-title { display: none; }
+      .user-pill span { display: none; }
+      .nav-actions { gap: 7px; }
+      .cards, .loader-grid { grid-template-columns: 1fr; }
+      .hero { padding-top: 62px; }
+      h1 { font-size: 42px; }
+      .hero-copy { font-size: 16px; }
+      .footer-row { flex-direction: column; align-items: flex-start; }
+      .modal-backdrop { padding: 8px; }
+      .modal { height: 95vh; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container nav">
+      <a class="brand" href="#top" aria-label="Skylark MSP Knowledge Hub home">
+        <img src="https://www.skylarkinfo.com/dist/static/images/logos/logo-blue.png" alt="Skylark" />
+        <span class="brand-divider"></span>
+        <span class="brand-title">MSP Knowledge Hub</span>
+      </a>
+      <div class="nav-actions">
+        <div id="userPill" class="user-pill">
+          <img id="userAvatar" alt="" />
+          <span id="userName"></span>
+        </div>
+        <button id="signInBtn" class="outline-btn hidden">Sign in to continue</button>
+        <button id="logoutBtn" class="danger-btn hidden">Sign out</button>
+      </div>
+    </div>
+  </header>
+
+  <main id="top">
+    <section class="hero">
+      <div class="container hero-grid">
+        <div>
+          <div class="eyebrow">Skylark Information Technologies</div>
+          <h1>MSP Knowledge <span>Hub</span></h1>
+          <p class="hero-copy">
+            A centralized workspace for infrastructure support procedures, troubleshooting guides,
+            escalation references, monitoring standards, and operational knowledge.
+          </p>
+          <div class="hero-status">
+            <span id="statusDot" class="status-dot"></span>
+            <span id="authStatus">Checking your access…</span>
+          </div>
+          <div class="hero-actions">
+            <button id="exploreBtn" class="primary-btn">Explore Knowledge Bases →</button>
+            <button id="signInHeroBtn" class="outline-btn hidden">Sign in with GitHub →</button>
+          </div>
+        </div>
+
+        <aside class="hero-panel" aria-label="Quick access">
+          <div class="panel-kicker">Quick Access</div>
+          <div class="panel-title">Your Documentation</div>
+          <div id="quickList" class="quick-list">
+            <div class="loading-box">Loading your knowledge bases…</div>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <section id="knowledge-bases">
+      <div class="container">
+        <div class="section-head">
+          <span class="section-tag">Knowledge at your fingertips</span>
+          <h2>Your accessible knowledge bases.</h2>
+          <p>
+            Only repositories available to your authenticated GitHub account are shown here.
+            The repository pages themselves are never used for normal document browsing.
+          </p>
+        </div>
+
+        <div id="loginNotice" class="notice hidden">
+          Sign in with GitHub to view the knowledge bases available to your MSP account.
+        </div>
+
+        <div id="cards" class="cards"></div>
+        <div id="cardsSkeleton" class="loader-grid">
+          <div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="portal" class="portal hidden">
+      <div class="container">
+        <div class="portal-toolbar">
+          <div class="crumbs">
+            <button id="backToBases" type="button">Knowledge Bases</button>
+            <span>›</span>
+            <strong id="currentRepoTitle">Documentation</strong>
+          </div>
+          <div class="search-wrap">
+            <span class="search-icon">⌕</span>
+            <input id="docSearch" type="search" placeholder="Search documents…" autocomplete="off" />
+          </div>
+        </div>
+
+        <div class="docs-layout">
+          <aside class="folder-panel">
+            <div class="folder-title">Folders</div>
+            <div id="folderList"></div>
+          </aside>
+
+          <section class="docs-panel">
+            <div class="docs-panel-head">
+              <h3 id="docsTitle" class="docs-title">Documents</h3>
+              <p id="docsSubtitle" class="docs-subtitle">Loading…</p>
+            </div>
+            <div id="docList" class="doc-list">
+              <div class="loading-box">Loading documents…</div>
+            </div>
+          </section>
+        </div>
+      </div>
+    </section>
+
+    <section id="about" class="info-band">
+      <div class="container info-band-grid">
+        <div>
+          <span class="section-tag">Built for MSP Operations</span>
+          <h2>One entry point. Controlled documentation.</h2>
+          <p>
+            GitHub remains the source of truth for the private documentation and permissions.
+            The Skylark portal provides the presentation layer for authorized users.
+          </p>
+        </div>
+        <div class="info-stat">
+          <span id="repoCount" class="stat-number">—</span>
+          <span class="stat-label">Knowledge Bases Available</span>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="container footer-row">
+      <div>
+        <div class="footer-brand">Skylark MSP Knowledge Hub</div>
+        <div class="footer-note">Skylark Information Technologies</div>
+      </div>
+      <div class="footer-links">
+        <a href="https://www.skylarkinfo.com/" target="_blank" rel="noopener">Skylark Website</a>
+      </div>
+    </div>
+  </footer>
+
+  <div id="modalBackdrop" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal">
+      <div class="modal-head">
+        <div class="modal-title-wrap">
+          <h3 id="modalTitle" class="modal-title">Document</h3>
+          <div id="modalPath" class="modal-path"></div>
+        </div>
+        <div class="modal-actions">
+          <button id="downloadBtn" type="button">Download</button>
+          <button id="closeModalBtn" type="button">Close</button>
+        </div>
+      </div>
+      <div id="modalBody" class="modal-body">
+        <div class="modal-loading">Loading document…</div>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast" class="toast" role="status"></div>
+
+  <script>
+    const API_BASE = 'https://msp-knowledge-api.monitoring-043.workers.dev';
+    const FRONTEND_BASE = 'https://skylark-msp.github.io/msp-knowledge-hub/';
+
+    const state = {
+      authenticated: false,
+      user: null,
+      repositories: [],
+      currentRepo: null,
+      currentFiles: [],
+      currentFolder: '',
+      selectedFile: null,
+      selectedBlobUrl: null,
+    };
+
+    const $ = (id) => document.getElementById(id);
+
+    function showToast(message) {
+      const toast = $('toast');
+      toast.textContent = message;
+      toast.classList.add('show');
+      clearTimeout(showToast.timer);
+      showToast.timer = setTimeout(() => toast.classList.remove('show'), 4200);
+    }
+
+    async function api(path, options = {}) {
+      const response = await fetch(API_BASE + path, {
+        credentials: 'include',
+        ...options,
+        headers: {
+          'Accept': 'application/json',
+          ...(options.headers || {})
+        }
+      });
+      const contentType = response.headers.get('Content-Type') || '';
+      if (!response.ok) {
+        let message = `Request failed (${response.status})`;
+        if (contentType.includes('application/json')) {
+          const data = await response.json().catch(() => null);
+          if (data?.error) message = data.error;
+        }
+        throw new Error(message);
+      }
+      return contentType.includes('application/json') ? response.json() : response;
+    }
+
+    function setAuthenticated(user) {
+      state.authenticated = Boolean(user);
+      state.user = user || null;
+      $('userPill').style.display = state.authenticated ? 'inline-flex' : 'none';
+      $('logoutBtn').classList.toggle('hidden', !state.authenticated);
+      $('signInBtn').classList.toggle('hidden', state.authenticated);
+      $('signInHeroBtn').classList.toggle('hidden', state.authenticated);
+      $('authStatus').textContent = state.authenticated
+        ? `Signed in as ${user.name || user.login}`
+        : 'Sign in to access your authorized documentation';
+      if (state.authenticated) {
+        $('userName').textContent = user.name || user.login;
+        $('userAvatar').src = user.avatar_url || '';
+        $('statusDot').style.background = '#20B26B';
+        $('loginNotice').classList.add('hidden');
+      } else {
+        $('statusDot').style.background = '#F2A900';
+        $('loginNotice').classList.remove('hidden');
+      }
+    }
+
+    function repoCard(repo) {
+      const el = document.createElement('article');
+      el.className = 'card';
+      el.innerHTML = `
+        <span class="card-icon">${escapeHtml(repo.icon || 'KB')}</span>
+        <h3>${escapeHtml(repo.title || repo.name)}</h3>
+        <p>${escapeHtml(repo.subtitle || '')}</p>
+        <span class="card-link">Browse documentation →</span>
+      `;
+      el.addEventListener('click', () => openRepository(repo.name));
+      return el;
+    }
+
+    function quickItem(repo) {
+      const el = document.createElement('div');
+      el.className = 'quick-item';
+      el.innerHTML = `
+        <span class="quick-left">
+          <span class="icon">${escapeHtml(repo.icon || 'KB')}</span>
+          <span>
+            <span class="quick-name">${escapeHtml(repo.title || repo.name)}</span><br>
+            <span class="quick-sub">${escapeHtml(repo.subtitle || '')}</span>
+          </span>
+        </span>
+        <span class="arrow">→</span>
+      `;
+      el.addEventListener('click', () => openRepository(repo.name));
+      return el;
+    }
+
+    function renderRepositories() {
+      const cards = $('cards');
+      const quick = $('quickList');
+      cards.innerHTML = '';
+      quick.innerHTML = '';
+
+      if (!state.repositories.length) {
+        quick.innerHTML = '<div class="empty">No accessible knowledge bases were found for this account.</div>';
+        cards.innerHTML = '<div class="empty">No accessible knowledge bases were found for this account.</div>';
+        $('repoCount').textContent = '0';
+        return;
+      }
+
+      state.repositories.forEach(repo => {
+        cards.appendChild(repoCard(repo));
+        quick.appendChild(quickItem(repo));
+      });
+      $('repoCount').textContent = String(state.repositories.length);
+    }
+
+    async function loadSessionAndRepositories() {
+      try {
+        const me = await api('/api/me');
+        setAuthenticated(me.user);
+        state.repositories = (await api('/api/repositories')).repositories || [];
+        renderRepositories();
+      } catch (error) {
+        setAuthenticated(null);
+        state.repositories = [];
+        renderRepositories();
+        $('repoCount').textContent = '0';
+      } finally {
+        $('cardsSkeleton').classList.add('hidden');
+      }
+    }
+
+    function folderSet(files) {
+      const folders = new Set(['']);
+      for (const file of files) {
+        const parts = file.path.split('/');
+        if (parts.length > 1) {
+          for (let i = 1; i < parts.length; i++) {
+            folders.add(parts.slice(0, i).join('/'));
+          }
+        }
+      }
+      return [...folders].sort((a, b) => a.localeCompare(b));
+    }
+
+    function renderFolders() {
+      const folderList = $('folderList');
+      folderList.innerHTML = '';
+      const folders = folderSet(state.currentFiles);
+      for (const folder of folders) {
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = `folder-btn ${folder === state.currentFolder ? 'active' : ''}`;
+        const name = folder ? folder.split('/').pop() : 'All Documents';
+        const count = state.currentFiles.filter(f => folder
+          ? f.path.startsWith(folder + '/')
+          : true).length;
+        button.innerHTML = `<span>${escapeHtml(name)}</span><span class="folder-count">${count}</span>`;
+        button.addEventListener('click', () => {
+          state.currentFolder = folder;
+          renderFolders();
+          renderDocuments();
+        });
+        folderList.appendChild(button);
+      }
+    }
+
+    function renderDocuments() {
+      const query = $('docSearch').value.trim().toLowerCase();
+      const list = $('docList');
+      let files = state.currentFiles.filter(file => {
+        if (state.currentFolder && !file.path.startsWith(state.currentFolder + '/')) return false;
+        if (!query) return true;
+        return file.name.toLowerCase().includes(query) || file.path.toLowerCase().includes(query);
+      });
+
+      files.sort((a, b) => a.path.localeCompare(b.path));
+      $('docsSubtitle').textContent = `${files.length} document${files.length === 1 ? '' : 's'} available`;
+      list.innerHTML = '';
+
+      if (!files.length) {
+        list.innerHTML = '<div class="empty">No documents match the current filter.</div>';
+        return;
+      }
+
+      for (const file of files) {
+        const row = document.createElement('div');
+        row.className = 'doc-item';
+        const ext = file.name.includes('.') ? file.name.split('.').pop().toUpperCase() : 'DOC';
+        row.innerHTML = `
+          <div class="doc-left">
+            <span class="doc-icon">${escapeHtml(ext.slice(0, 4))}</span>
+            <div style="min-width:0">
+              <div class="doc-name">${escapeHtml(file.name)}</div>
+              <div class="doc-path">${escapeHtml(file.path)}</div>
+            </div>
+          </div>
+          <div class="doc-arrow">Open →</div>
+        `;
+        row.addEventListener('click', () => openDocument(file));
+        list.appendChild(row);
+      }
+    }
+
+    async function openRepository(repoName) {
+      if (!state.authenticated) {
+        window.location.hash = 'knowledge-bases';
+        signIn();
+        return;
+      }
+      const repo = state.repositories.find(x => x.name === repoName);
+      if (!repo) {
+        showToast('You do not have access to that knowledge base.');
+        return;
+      }
+
+      state.currentRepo = repo;
+      state.currentFolder = '';
+      $('portal').classList.remove('hidden');
+      $('portal').scrollIntoView({ behavior: 'smooth', block: 'start' });
+      $('currentRepoTitle').textContent = repo.title || repo.name;
+      $('docsTitle').textContent = repo.title || repo.name;
+      $('docsSubtitle').textContent = 'Loading documents…';
+      $('docSearch').value = '';
+      $('docList').innerHTML = '<div class="loading-box">Loading documents…</div>';
+      $('folderList').innerHTML = '<div class="loading-box">Loading…</div>';
+
+      try {
+        const data = await api(`/api/tree?repo=${encodeURIComponent(repoName)}`);
+        state.currentFiles = data.files || [];
+        renderFolders();
+        renderDocuments();
+        history.replaceState(null, '', `${FRONTEND_BASE}#kb=${encodeURIComponent(repoName)}`);
+      } catch (error) {
+        state.currentFiles = [];
+        $('folderList').innerHTML = '';
+        $('docList').innerHTML = `<div class="error-box">${escapeHtml(error.message || 'Could not load documents.')}</div>`;
+      }
+    }
+
+    async function openDocument(file) {
+      if (!state.currentRepo) return;
+      $('modalBackdrop').classList.add('open');
+      document.body.classList.add('modal-open');
+      $('modalTitle').textContent = file.name;
+      $('modalPath').textContent = file.path;
+      $('modalBody').innerHTML = '<div class="modal-loading">Loading document…</div>';
+      $('downloadBtn').disabled = true;
+      state.selectedFile = file;
+      cleanupBlobUrl();
+
+      try {
+        const response = await fetch(
+          `${API_BASE}/api/file?repo=${encodeURIComponent(state.currentRepo.name)}&path=${encodeURIComponent(file.path)}`,
+          { credentials: 'include', headers: { 'Accept': '*/*' } }
+        );
+        if (!response.ok) {
+          const data = await response.json().catch(() => null);
+          throw new Error(data?.error || `Document request failed (${response.status})`);
+        }
+
+        const blob = await response.blob();
+        state.selectedBlobUrl = URL.createObjectURL(blob);
+        $('downloadBtn').disabled = false;
+        $('downloadBtn').onclick = () => downloadBlob(blob, file.name);
+        renderViewer(file, state.selectedBlobUrl, blob.type);
+      } catch (error) {
+        $('modalBody').innerHTML = `<div class="error-box">${escapeHtml(error.message || 'Could not open document.')}</div>`;
+      }
+    }
+
+    function renderViewer(file, blobUrl, contentType) {
+      const lower = file.name.toLowerCase();
+      if (lower.endsWith('.pdf')) {
+        $('modalBody').innerHTML = `<iframe title="${escapeHtml(file.name)}" src="${blobUrl}"></iframe>`;
+        return;
+      }
+      if (/\.(png|jpe?g|webp)$/i.test(lower)) {
+        $('modalBody').innerHTML = `<img src="${blobUrl}" alt="${escapeHtml(file.name)}" />`;
+        return;
+      }
+      if (/\.(md|txt)$/i.test(lower)) {
+        fetch(blobUrl).then(r => r.text()).then(t => {
+          const pre = document.createElement('pre');
+          pre.textContent = t;
+          $('modalBody').innerHTML = '';
+          $('modalBody').appendChild(pre);
+        }).catch(() => {
+          $('modalBody').innerHTML = '<div class="error-box">Unable to render this text document.</div>';
+        });
+        return;
+      }
+      $('modalBody').innerHTML = `<div class="empty">This file type cannot be previewed in the portal yet.<br><br>Use Download to save the document.</div>`;
+    }
+
+    function downloadBlob(blob, name) {
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = name;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+    }
+
+    function cleanupBlobUrl() {
+      if (state.selectedBlobUrl) {
+        URL.revokeObjectURL(state.selectedBlobUrl);
+        state.selectedBlobUrl = null;
+      }
+    }
+
+    function closeModal() {
+      cleanupBlobUrl();
+      $('modalBackdrop').classList.remove('open');
+      document.body.classList.remove('modal-open');
+      state.selectedFile = null;
+    }
+
+    function signIn() {
+      window.location.href = API_BASE + '/auth/login';
+    }
+
+    async function logout() {
+      try {
+        await fetch(`${API_BASE}/auth/logout`, {
+          method: 'POST',
+          credentials: 'include'
+        });
+      } catch (_) {}
+      state.authenticated = false;
+      state.user = null;
+      state.repositories = [];
+      state.currentRepo = null;
+      state.currentFiles = [];
+      $('portal').classList.add('hidden');
+      setAuthenticated(null);
+      renderRepositories();
+      $('cardsSkeleton').classList.add('hidden');
+      $('repoCount').textContent = '0';
+      history.replaceState(null, '', FRONTEND_BASE);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function escapeHtml(value) {
+      return String(value ?? '')
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#39;');
+    }
+
+    function routeFromHash() {
+      const hash = window.location.hash;
+      if (!hash.startsWith('#kb=')) return;
+      const repo = decodeURIComponent(hash.slice(4));
+      if (state.authenticated && state.repositories.some(x => x.name === repo)) {
+        openRepository(repo);
+      }
+    }
+
+    $('signInBtn').addEventListener('click', signIn);
+    $('signInHeroBtn').addEventListener('click', signIn);
+    $('logoutBtn').addEventListener('click', logout);
+    $('exploreBtn').addEventListener('click', () => {
+      document.getElementById('knowledge-bases').scrollIntoView({ behavior: 'smooth' });
+    });
+    $('backToBases').addEventListener('click', () => {
+      $('portal').classList.add('hidden');
+      window.location.hash = 'knowledge-bases';
+      document.getElementById('knowledge-bases').scrollIntoView({ behavior: 'smooth' });
+    });
+    $('docSearch').addEventListener('input', renderDocuments);
+    $('closeModalBtn').addEventListener('click', closeModal);
+    $('modalBackdrop').addEventListener('click', (event) => {
+      if (event.target === $('modalBackdrop')) closeModal();
+    });
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape') closeModal();
+    });
+    window.addEventListener('hashchange', routeFromHash);
+
+    // If GitHub redirected here with an OAuth error, show it without leaving GitHub details in the UI.
+    const params = new URLSearchParams(window.location.search);
+    const authError = params.get('error');
+    if (authError) {
+      showToast(authError);
+      history.replaceState(null, '', FRONTEND_BASE + (window.location.hash || ''));
+    }
+
+    loadSessionAndRepositories().then(routeFromHash);
+  </script>
+</body>
+</html>
