@@ -1150,14 +1150,13 @@
         row.className = 'doc-item';
         const ext = file.name.includes('.') ? file.name.split('.').pop().toUpperCase() : 'DOC';
         const creatorText = file.creator ? `Created by: ${file.creator}` : 'Creator: Not specified';
-        const dateText = file.createdDate ? `Created on: ${file.createdDate}` : '';
         row.innerHTML = `
           <div class="doc-left">
             <span class="doc-icon">${escapeHtml(ext.slice(0, 4))}</span>
             <div style="min-width:0">
               <div class="doc-name">${escapeHtml(file.name)}</div>
               <div class="doc-path">${escapeHtml(file.path)}</div>
-              <div class="doc-meta">${escapeHtml(creatorText)}${dateText ? ` · ${escapeHtml(dateText)}` : ''}</div>
+              <div class="doc-meta">${escapeHtml(creatorText)}</div>
             </div>
           </div>
           <div class="doc-arrow">Open →</div>
