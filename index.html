@@ -654,6 +654,120 @@
     }
     .toast.show { display: block; }
 
+    .audit-panel {
+      padding: 72px 0 88px;
+      background: #f6f9fc;
+      border-top: 1px solid #e7edf4;
+    }
+    .audit-toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+      margin: 22px 0 18px;
+      padding: 14px;
+      background: #fff;
+      border: 1px solid #e4ebf3;
+      border-radius: 16px;
+      box-shadow: 0 10px 30px rgba(16,42,67,.06);
+    }
+    .audit-filter,
+    .audit-select {
+      border: 1px solid #d6e0ea;
+      border-radius: 10px;
+      padding: 10px 12px;
+      background: #fff;
+      color: #17324d;
+      font: inherit;
+      min-height: 42px;
+    }
+    .audit-filter { min-width: 170px; flex: 1 1 180px; }
+    .audit-select { min-width: 160px; }
+    .audit-table-wrap {
+      overflow: auto;
+      background: #fff;
+      border: 1px solid #e4ebf3;
+      border-radius: 16px;
+      box-shadow: 0 10px 30px rgba(16,42,67,.06);
+    }
+    .audit-table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 900px;
+    }
+    .audit-table th,
+    .audit-table td {
+      padding: 13px 14px;
+      text-align: left;
+      border-bottom: 1px solid #edf2f7;
+      vertical-align: top;
+    }
+    .audit-table th {
+      position: sticky;
+      top: 0;
+      z-index: 1;
+      background: #f8fbfe;
+      color: #52677b;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      white-space: nowrap;
+    }
+    .audit-table td {
+      color: #203b55;
+      font-size: 13px;
+    }
+    .audit-event {
+      display: inline-flex;
+      align-items: center;
+      border-radius: 999px;
+      padding: 5px 9px;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: .04em;
+      white-space: nowrap;
+      background: #eef4fb;
+      color: #2f5f90;
+    }
+    .audit-doc {
+      max-width: 420px;
+      word-break: break-word;
+    }
+    .audit-empty,
+    .audit-loading,
+    .audit-error {
+      padding: 28px;
+      color: #65778b;
+      text-align: center;
+    }
+    .audit-error { color: #a43d3d; }
+    .audit-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 2px 0;
+      color: #65778b;
+      font-size: 13px;
+    }
+    .audit-pager {
+      display: flex;
+      gap: 8px;
+    }
+    .audit-pager button {
+      border: 1px solid #d6e0ea;
+      background: #fff;
+      color: #17324d;
+      border-radius: 9px;
+      padding: 8px 12px;
+      cursor: pointer;
+      font: inherit;
+    }
+    .audit-pager button:disabled {
+      opacity: .45;
+      cursor: not-allowed;
+    }
+
     @media (prefers-reduced-motion: reduce) {
       .hero-visual::before, .hero-visual::after, .hero-chip-a, .hero-chip-b, .hero-chip-c {
         animation: none !important;
@@ -707,6 +821,7 @@
           <span id="userName"></span>
         </div>
         <button id="signInBtn" class="outline-btn hidden">Sign in with GitHub</button>
+        <button id="auditBtn" class="outline-btn hidden">Audit</button>
         <button id="logoutBtn" class="danger-btn hidden">Sign out</button>
       </div>
     </div>
@@ -831,6 +946,58 @@
       </div>
     </section>
 
+    <section id="auditPanel" class="audit-panel hidden">
+      <div class="container">
+        <div class="section-head">
+          <span class="section-tag">MSP-Leads only</span>
+          <h2>Knowledge Hub Audit</h2>
+          <p>Review who signed in, which knowledge base was opened, and which documents were viewed through the portal.</p>
+        </div>
+
+        <div class="audit-toolbar">
+          <select id="auditEventFilter" class="audit-select" aria-label="Filter by event">
+            <option value="">All events</option>
+            <option value="LOGIN">Login</option>
+            <option value="LOGOUT">Logout</option>
+            <option value="KB_VIEW">Knowledge Base View</option>
+            <option value="DOCUMENT_VIEW">Document View</option>
+          </select>
+          <select id="auditRepoFilter" class="audit-select" aria-label="Filter by knowledge base">
+            <option value="">All knowledge bases</option>
+          </select>
+          <input id="auditUserFilter" class="audit-filter" type="search" placeholder="Filter by GitHub username…" autocomplete="off" />
+          <button id="auditApplyBtn" class="primary-btn" type="button">Apply</button>
+          <button id="auditRefreshBtn" class="outline-btn" type="button">Refresh</button>
+          <button id="auditBackBtn" class="outline-btn" type="button">Back to Knowledge Bases</button>
+        </div>
+
+        <div class="audit-table-wrap">
+          <table class="audit-table">
+            <thead>
+              <tr>
+                <th>Time</th>
+                <th>User</th>
+                <th>Event</th>
+                <th>Knowledge Base</th>
+                <th>Document</th>
+              </tr>
+            </thead>
+            <tbody id="auditTableBody">
+              <tr><td colspan="5" class="audit-loading">Audit history will appear here.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="audit-footer">
+          <span id="auditCount">0 records</span>
+          <div class="audit-pager">
+            <button id="auditPrevBtn" type="button" disabled>Previous</button>
+            <button id="auditNextBtn" type="button" disabled>Next</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <section id="about" class="info-band">
       <div class="container info-band-grid">
         <div>
@@ -910,6 +1077,9 @@
       pdfDoc: null,
       pdfZoom: 1,
       portalToken: sessionStorage.getItem('skylark_portal_token') || '',
+      isLead: false,
+      auditOffset: 0,
+      auditLimit: 100,
     };
 
     const $ = (id) => document.getElementById(id);
@@ -933,13 +1103,18 @@
       state.portalToken = '';
       state.authenticated = false;
       state.user = null;
+      state.isLead = false;
       state.repositories = [];
       state.currentRepo = null;
       state.currentFiles = [];
       state.currentFolder = '';
+      state.isLead = false;
+      state.auditOffset = 0;
       sessionStorage.removeItem('skylark_portal_token');
       closeModal();
       $('portal').classList.add('hidden');
+      $('auditPanel').classList.add('hidden');
+      $('auditBtn').classList.add('hidden');
       setAuthenticated(null);
       renderRepositories();
       $('cardsSkeleton').classList.add('hidden');
@@ -981,6 +1156,7 @@
       state.user = user || null;
       $('userPill').style.display = state.authenticated ? 'inline-flex' : 'none';
       $('logoutBtn').classList.toggle('hidden', !state.authenticated);
+      $('auditBtn').classList.toggle('hidden', !state.authenticated || !Boolean(user?.isLead));
       $('signInBtn').classList.toggle('hidden', state.authenticated);
       $('signInHeroBtn').classList.toggle('hidden', state.authenticated);
       $('authStatus').textContent = state.authenticated
@@ -1073,7 +1249,8 @@
         }
 
         const me = await api('/api/me');
-        setAuthenticated(me.user);
+        state.isLead = Boolean(me.isLead);
+        setAuthenticated({ ...(me.user || {}), isLead: state.isLead });
 
         const repoData = await api('/api/repositories');
         state.repositories = repoData.repositories || [];
@@ -1398,6 +1575,118 @@
       state.selectedFile = null;
     }
 
+    function formatAuditTime(value) {
+      if (!value) return '—';
+      const raw = String(value).trim();
+      const iso = raw.includes('T') ? raw : raw.replace(' ', 'T') + 'Z';
+      const date = new Date(iso);
+      if (Number.isNaN(date.getTime())) return raw;
+      return date.toLocaleString(undefined, {
+        year: 'numeric',
+        month: 'short',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+      });
+    }
+
+    function eventLabel(eventType) {
+      const labels = {
+        LOGIN: 'LOGIN',
+        LOGOUT: 'LOGOUT',
+        KB_VIEW: 'KB VIEW',
+        DOCUMENT_VIEW: 'DOCUMENT VIEW',
+      };
+      return labels[eventType] || eventType || 'EVENT';
+    }
+
+    function renderAuditRows(rows) {
+      const body = $('auditTableBody');
+      body.innerHTML = '';
+      if (!rows.length) {
+        body.innerHTML = '<tr><td colspan="5" class="audit-empty">No audit records match the current filter.</td></tr>';
+        return;
+      }
+
+      for (const row of rows) {
+        const tr = document.createElement('tr');
+        const user = row.display_name && row.display_name !== row.username
+          ? `${row.display_name} (${row.username})`
+          : (row.username || '—');
+        const kb = row.repo || '—';
+        const documentText = row.document_name
+          ? `${row.document_name}${row.path ? `\n${row.path}` : ''}`
+          : (row.path || '—');
+
+        tr.innerHTML = `
+          <td>${escapeHtml(formatAuditTime(row.created_at))}</td>
+          <td>${escapeHtml(user)}</td>
+          <td><span class="audit-event">${escapeHtml(eventLabel(row.event_type))}</span></td>
+          <td>${escapeHtml(kb)}</td>
+          <td class="audit-doc">${escapeHtml(documentText).replaceAll('\n', '<br>')}</td>
+        `;
+        body.appendChild(tr);
+      }
+    }
+
+    function populateAuditRepoFilter() {
+      const select = $('auditRepoFilter');
+      const current = select.value;
+      select.innerHTML = '<option value="">All knowledge bases</option>';
+      for (const repo of state.repositories) {
+        const option = document.createElement('option');
+        option.value = repo.name;
+        option.textContent = repo.title || repo.name;
+        select.appendChild(option);
+      }
+      if ([...select.options].some(option => option.value === current)) select.value = current;
+    }
+
+    function auditQueryPath() {
+      const params = new URLSearchParams();
+      const event = $('auditEventFilter').value;
+      const repo = $('auditRepoFilter').value;
+      const user = $('auditUserFilter').value.trim();
+      params.set('limit', String(state.auditLimit));
+      params.set('offset', String(state.auditOffset));
+      if (event) params.set('event', event);
+      if (repo) params.set('repo', repo);
+      if (user) params.set('user', user);
+      return `/api/admin/audit?${params.toString()}`;
+    }
+
+    async function loadAudit(resetOffset = false) {
+      if (!state.isLead || !state.portalToken) return;
+      if (resetOffset) state.auditOffset = 0;
+      $('auditTableBody').innerHTML = '<tr><td colspan="5" class="audit-loading">Loading audit history…</td></tr>';
+      try {
+        populateAuditRepoFilter();
+        const data = await api(auditQueryPath());
+        renderAuditRows(data.rows || []);
+        const total = Number(data.total || 0);
+        $('auditCount').textContent = `${total.toLocaleString()} record${total === 1 ? '' : 's'}`;
+        $('auditPrevBtn').disabled = state.auditOffset <= 0;
+        $('auditNextBtn').disabled = !data.hasMore;
+      } catch (error) {
+        $('auditTableBody').innerHTML = `<tr><td colspan="5" class="audit-error">${escapeHtml(error.message || 'Could not load audit history.')}</td></tr>`;
+        $('auditPrevBtn').disabled = true;
+        $('auditNextBtn').disabled = true;
+      }
+    }
+
+    async function openAuditDashboard() {
+      if (!state.authenticated || !state.isLead) {
+        showToast('MSP-Leads access is required to view the audit history.');
+        return;
+      }
+      $('portal').classList.add('hidden');
+      $('auditPanel').classList.remove('hidden');
+      populateAuditRepoFilter();
+      $('auditPanel').scrollIntoView({ behavior: 'smooth', block: 'start' });
+      await loadAudit(true);
+    }
+
     function signIn() {
       window.location.href = API_BASE + '/auth/login';
     }
@@ -1416,6 +1705,8 @@
       state.currentRepo = null;
       state.currentFiles = [];
       $('portal').classList.add('hidden');
+      $('auditPanel').classList.add('hidden');
+      $('auditBtn').classList.add('hidden');
       setAuthenticated(null);
       renderRepositories();
       $('cardsSkeleton').classList.add('hidden');
@@ -1441,6 +1732,25 @@
         openRepository(repo);
       }
     }
+
+    $('auditBtn').addEventListener('click', openAuditDashboard);
+    $('auditApplyBtn').addEventListener('click', () => loadAudit(true));
+    $('auditRefreshBtn').addEventListener('click', () => loadAudit(false));
+    $('auditPrevBtn').addEventListener('click', async () => {
+      state.auditOffset = Math.max(0, state.auditOffset - state.auditLimit);
+      await loadAudit(false);
+    });
+    $('auditNextBtn').addEventListener('click', async () => {
+      state.auditOffset += state.auditLimit;
+      await loadAudit(false);
+    });
+    $('auditUserFilter').addEventListener('keydown', (event) => {
+      if (event.key === 'Enter') loadAudit(true);
+    });
+    $('auditBackBtn').addEventListener('click', () => {
+      $('auditPanel').classList.add('hidden');
+      document.getElementById('knowledge-bases').scrollIntoView({ behavior: 'smooth' });
+    });
 
     $('signInBtn').addEventListener('click', signIn);
     $('signInHeroBtn').addEventListener('click', signIn);
